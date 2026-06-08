@@ -1,0 +1,77 @@
+{% extends 'cin/base.html' %}
+
+{% block title %}Espace Validation - DIGIT-CIN{% endblock %}
+
+{% block content %}
+<div class="flex flex-col space-y-6">
+    
+    <div>
+        <h2 class="text-xl font-bold text-slate-800">Validation & Contrôle</h2>
+        <p class="text-xs text-slate-400">Gestion de la conformité des cartes d'identité nationales</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-xs text-slate-400 uppercase font-semibold">Dossiers Reçus</p>
+                <h3 class="text-2xl font-bold text-blue-600 mt-1">{{ demandes.count }}</h3>
+            </div>
+            <div class="p-3 bg-blue-50 text-blue-600 rounded-lg text-lg"><i class="fa-solid fa-inbox"></i></div>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-xs text-slate-400 uppercase font-semibold">Approuvés</p>
+                <h3 class="text-2xl font-bold text-emerald-600 mt-1">0</h3>
+            </div>
+            <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg text-lg"><i class="fa-solid fa-user-check"></i></div>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-xs text-slate-400 uppercase font-semibold">Refusés / Rejetés</p>
+                <h3 class="text-2xl font-bold text-red-600 mt-1">0</h3>
+            </div>
+            <div class="p-3 bg-red-50 text-red-600 rounded-lg text-lg"><i class="fa-solid fa-user-xmark"></i></div>
+        </div>
+    </div>
+
+    <div class="bg-slate-100 p-3 rounded-lg text-sm font-semibold text-slate-700 flex items-center">
+        <i class="fa-solid fa-list-check mr-2 text-slate-500"></i> Dossiers REÇUS En attente de validation
+    </div>
+
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-100 text-xs font-bold uppercase text-slate-500 tracking-wider">
+                        <th class="py-3.5 px-4">Date de Dépôt</th>
+                        <th class="py-3.5 px-4">N° CIN</th>
+                        <th class="py-3.5 px-4">Identité Civile</th>
+                        <th class="py-3.5 px-4 text-center">Contrôle CIN</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-sm">
+                    {% for demande in demandes %}
+                    <tr class="hover:bg-amber-50/30 transition">
+                        <td class="py-3.5 px-4 text-slate-500 font-medium">{{ demande.date_creation|date:"d/m/Y H:i" }}</td>
+                        <td class="py-3.5 px-4 font-mono font-bold text-slate-700">{{ demande.numero_cin }}</td>
+                        <td class="py-3.5 px-4 text-slate-900 font-semibold">{{ demande.nom }} {{ demande.prenom }}</td>
+                        <td class="py-3.5 px-4 text-center">
+                            <a href="{% url 'instruction_demande' demande.pk %}" class="inline-flex items-center space-x-1.5 bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg font-medium text-xs shadow-sm transition">
+                                <i class="fa-solid fa-magnifying-glass-encrypted"></i>
+                                <span>Instruire</span>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="py-8 text-center text-slate-400 italic">
+                            Aucun dossier en attente pour le moment.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

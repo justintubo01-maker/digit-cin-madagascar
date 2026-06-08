@@ -1,0 +1,58 @@
+<!-- cin/templates/cin/base.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DIGIT-CIN - Madagascar{% endblock %}</title>
+    <!-- Chargement de Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Icônes FontAwesome pour habiller les boutons comme sur les maquettes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between font-sans">
+
+    <!-- Navbar principale (Inspirée du haut de tes feuilles) -->
+    <header class="bg-emerald-700 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white text-emerald-700 p-2 rounded-lg font-bold text-xl shadow-inner">
+                    🇲🇬 DIGIT-CIN
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-wide">Digitalisation CIN</h1>
+                    <p class="text-xs text-emerald-200">République de Madagascar</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4 text-white">
+                {% if user.is_authenticated %}
+                    <!-- Si un utilisateur s'est connecté avec son mot de passe -->
+                    <span class="text-xs bg-emerald-800 px-3 py-1.5 rounded-full">
+                        <i class="fa-solid fa-user mr-1"></i> {{ user.username }}
+                    </span>
+                    <a href="{% url 'deconnexion' %}" class="text-xs bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-xl transition font-medium">
+                        <i class="fa-solid fa-power-off mr-1"></i> Déconnexion
+                    </a>
+                {% else %}
+                    <!-- Si personne n'est encore connecté -->
+                    <span class="text-xs bg-slate-700 px-3 py-1.5 rounded-full italic text-slate-300">
+                        <i class="fa-solid fa-user-secret mr-1"></i> Non connecté
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenu dynamique de chaque page -->
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-400 text-center py-4 border-t border-slate-700 text-sm">
+        <p>&copy; 2026 DIGIT-CIN - Madagascar. Tout droit réservé.</p>
+    </footer>
+
+</body>
+</html>

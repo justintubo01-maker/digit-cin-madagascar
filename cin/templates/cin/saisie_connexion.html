@@ -1,0 +1,51 @@
+{% extends 'cin/base.html' %}
+
+{% block title %}Connexion Opérateur Saisie - DIGIT-CIN{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto my-12 bg-white p-8 rounded-2xl shadow-md border border-slate-100">
+    <div class="text-center mb-6">
+        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+            <i class="fa-solid fa-key"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-800">Authentification Utilisateur</h2>
+        <p class="text-sm text-slate-500 mt-1">Espace : SAISIE</p>
+    </div>
+
+    <form action="{% url 'dashboard_saisie' %}" method="GET" class="space-y-5">
+        <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Nom d'utilisateur</label>
+            <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                    <i class="fa-solid fa-user"></i>
+                </span>
+                <input type="text" placeholder="Ex: operateur_saisie_01" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Mot de passe</label>
+            <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                    <i class="fa-solid fa-lock"></i>
+                </span>
+                <input type="password" placeholder="••••••••" class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 cursor-pointer hover:text-slate-600">
+                    <i class="fa-solid fa-eye"></i>
+                </span>
+            </div>
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition shadow-sm flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span>Se connecter</span>
+        </button>
+    </form>
+
+    <div class="mt-6 pt-4 border-t border-slate-100 text-center">
+        <a href="{% url 'index_portail' %}" class="inline-flex items-center text-sm text-slate-500 hover:text-slate-800 transition">
+            <i class="fa-solid fa-arrow-left mr-2 text-xs"></i> Retour au choix d'accueil
+        </a>
+    </div>
+</div>
+{% endblock %}

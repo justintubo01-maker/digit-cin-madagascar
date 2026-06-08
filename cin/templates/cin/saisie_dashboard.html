@@ -1,0 +1,131 @@
+{% extends 'cin/base.html' %}
+
+{% block title %}Dashboard Saisie - DIGIT-CIN{% endblock %}
+
+{% block content %}
+<div class="flex flex-col space-y-6">
+
+    <div
+        class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 rounded-xl border border-slate-100 shadow-sm gap-4">
+        <div>
+            <h2 class="text-xl font-bold text-slate-800">Saisie d'Identité</h2>
+            <p class="text-xs text-slate-400">Session utilisateur : Agent de Saisie</p>
+        </div>
+        <a href="{% url 'nouvelle_demande' %}"
+            class="inline-flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-medium shadow-sm text-sm transition">
+            <i class="fa-solid fa-plus-circle"></i>
+            <span>Nouveau Dossier CIN</span>
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-xs text-slate-400 uppercase font-semibold">Toutes les demandes</p>
+                <h3 class="text-2xl font-bold text-slate-800 mt-1">{{ total }}</h3>
+            </div>
+            <div class="p-3 bg-slate-100 text-slate-600 rounded-lg text-lg"><i class="fa-solid fa-folder-open"></i>
+            </div>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-xs text-slate-400 uppercase font-semibold">En attente</p>
+                <h3 class="text-2xl font-bold text-amber-600 mt-1">{{ en_attente }}</h3>
+            </div>
+            <div class="p-3 bg-amber-50 text-amber-600 rounded-lg text-lg"><i class="fa-solid fa-clock"></i></div>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-xs text-slate-400 uppercase font-semibold">Approuvées</p>
+                <h3 class="text-2xl font-bold text-emerald-600 mt-1">{{ approuvees }}</h3>
+            </div>
+            <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg text-lg"><i class="fa-solid fa-circle-check"></i>
+            </div>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-xs text-slate-400 uppercase font-semibold">Rejetées</p>
+                <h3 class="text-2xl font-bold text-red-600 mt-1">{{ rejetees }}</h3>
+            </div>
+            <div class="p-3 bg-red-50 text-red-600 rounded-lg text-lg"><i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+        </div>
+    </div>
+
+    <div
+        class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="relative w-full md:w-72">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i
+                    class="fa-solid fa-magnifying-glass text-sm"></i></span>
+            <input type="text" placeholder="Recherche par CIN, Nom, Prénom..."
+                class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+        </div>
+        <div class="flex items-center space-x-2 w-full md:w-auto justify-end">
+            <span class="text-sm font-medium text-slate-500"><i class="fa-solid fa-filter mr-1"></i> Filtrer :</span>
+            <select
+                class="border border-slate-200 rounded-xl py-1.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50">
+                <option>Toutes les demandes</option>
+                <option>En attente</option>
+                <option>Approuvées</option>
+                <option>Rejetées</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr
+                        class="bg-slate-50 border-b border-slate-100 text-xs font-bold uppercase text-slate-500 tracking-wider">
+                        <th class="py-3.5 px-4">N° CIN</th>
+                        <th class="py-3.5 px-4">Identité Civile</th>
+                        <th class="py-3.5 px-4">Date de dépôt</th>
+                        <th class="py-3.5 px-4">Statut CIN</th>
+                        <th class="py-3.5 px-4 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-sm">
+                    {% for demande in demandes %}
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="py-3.5 px-4 font-mono font-medium text-slate-700">{{ demande.numero_cin }}</td>
+                        <td class="py-3.5 px-4">
+                            <div class="font-semibold text-slate-900">{{ demande.nom }} {{ demande.prenom }}</div>
+                            <div class="text-xs text-slate-400">{{ demande.get_sexe_display }} • Née le {{
+                                demande.date_naissance }}</div>
+                        </td>
+                        <td class="py-3.5 px-4 text-slate-500">{{ demande.date_creation|date:"d/m/Y H:i" }}</td>
+                        <td class="py-3.5 px-4">
+                            <span
+                                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                                {{ demande.get_statut_display }}
+                            </span>
+                        </td>
+                        <td class="py-3.5 px-4 flex items-center justify-center space-x-2">
+                            <a href="{% url 'modifier_demande' demande.pk %}"
+                                class="inline-flex items-center space-x-1 bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                                <span>Modifier</span>
+                            </a>
+
+                            <a href="{% url 'supprimer_demande' demande.pk %}"
+                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer définitivement cette demande ?');"
+                                class="inline-flex items-center space-x-1 bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition">
+                                <i class="fa-solid fa-trash-can"></i>
+                                <span>Supprimer</span>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-slate-400 italic">
+                            Aucun dossier encodé pour le moment. Cliquez sur "Nouveau Dossier CIN" pour commencer.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

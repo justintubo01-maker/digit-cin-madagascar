@@ -1,0 +1,125 @@
+
+{% extends 'cin/base.html' %}
+
+{% block title %}Nouveau Dossier CIN - DIGIT-CIN{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto flex flex-col space-y-6">
+    
+    <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+        <div class="flex items-center space-x-2">
+            <span class="text-blue-600 font-bold"><i class="fa-solid fa-keyboard mr-1"></i> Saisie</span>
+            <span class="text-slate-300">/</span>
+            <span class="text-slate-600 font-medium">Nouveau Dossier National</span>
+        </div>
+        <a href="{% url 'dashboard_saisie' %}" class="text-slate-400 hover:text-slate-600 transition text-lg p-1" title="Annuler et retourner au dashboard">
+            <i class="fa-solid fa-xmark"></i>
+        </a>
+    </div>
+
+    <form action="{% url 'nouvelle_demande' %}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {% csrf_token %}
+        
+        <div class="md:col-span-2 bg-white p-6 rounded-xl border border-slate-100 shadow-sm space-y-5">
+            <h3 class="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center">
+                <i class="fa-solid fa-address-card text-blue-600 mr-2"></i> Identité Civile du Citoyen
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Numéro CIN</label>
+                    <input type="text" name="numero_cin" required placeholder="Ex: 101234567890" maxlength="12" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-mono tracking-wider">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Sexe</label>
+                    <select name="sexe" required class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-slate-50">
+                        <option value="M">Masculin</option>
+                        <option value="F">Féminin</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nom</label>
+                    <input type="text" name="nom" required placeholder="En majuscules" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Prénom(s)</label>
+                    <input type="text" name="prenom" required placeholder="Prénoms usuels" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Date de Naissance</label>
+                    <input type="date" name="date_naissance" required class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Lieu de Naissance</label>
+                    <input type="text" name="lieu_naissance" required placeholder="Commune / District" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Adresse Résidentielle Actuelle</label>
+                <textarea name="adresse" rows="3" required placeholder="Fokontany, Commune, Ville..." class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Numéro de Téléphone (Contact)</label>
+                <input type="text" name="telephone" required placeholder="Ex: 034 00 000 00" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+            </div>
+        </div>
+
+        <div class="flex flex-col space-y-6">
+            <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm space-y-4">
+                <h3 class="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center">
+                    <i class="fa-solid fa-camera text-blue-600 mr-2"></i> Numérisations
+                </h3>
+
+                <div class="border border-dashed border-slate-200 p-3 rounded-xl hover:bg-slate-50 transition">
+                    <label class="block text-xs font-bold text-slate-600 mb-1"><i class="fa-solid fa-user-image mr-1 text-slate-400"></i> Photo d'identité</label>
+                    <input type="file" name="photo_identite" required class="block w-full text-xs text-slate-500 file:mr-3 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+
+
+                <div class="border border-dashed border-slate-200 p-3 rounded-xl hover:bg-slate-50 transition">
+                    <label class="block text-xs font-bold text-slate-600 mb-1"><i class="fa-solid fa-file-image mr-1 text-slate-400"></i> Fichier image Recto</label>
+                    <input type="file" name="scan_recto" required class="block w-full text-xs text-slate-500 file:mr-3 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+
+                <div class="border border-dashed border-slate-200 p-3 rounded-xl hover:bg-slate-50 transition">
+                    <label class="block text-xs font-bold text-slate-600 mb-1"><i class="fa-solid fa-file-image mr-1 text-slate-400"></i> Fichier image Verso</label>
+                    <input type="file" name="scan_verso" required class="block w-full text-xs text-slate-500 file:mr-3 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+            </div>
+
+            <!-- Les 3 boutons corrigés selon ta logique métier (Photo 4) -->
+<div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm flex flex-col space-y-3">
+    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Actions disponibles</h4>
+    
+    <!-- Bouton 1 : Enregistrer (Sauvegarde et va à la liste) -->
+    <button type="submit" name="action_bouton" value="enregistrer_quitter" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2.5 rounded-xl transition shadow-sm flex items-center justify-center space-x-2">
+        <i class="fa-solid fa-list-check"></i>
+        <span>Enregistrer</span>
+    </button>
+
+    <!-- Bouton 2 : Enregistrer et rester (Sauvegarde et recharge le formulaire vide) -->
+    <button type="submit" name="action_bouton" value="enregistrer_rester" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold py-2.5 rounded-xl transition shadow-sm flex items-center justify-center space-x-2">
+        <i class="fa-solid fa-rotate"></i>
+        <span>Enregistrer et rester</span>
+    </button>
+
+    <hr class="border-slate-100 my-1">
+
+    <!-- Bouton 3 : Annuler (Ne fait rien et retourne à la liste) -->
+    <a href="{% url 'dashboard_saisie' %}" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-semibold py-2.5 rounded-xl transition text-center flex items-center justify-center space-x-2">
+        <i class="fa-solid fa-ban"></i>
+        <span>Annuler</span>
+    </a>
+</div>
+        </div>
+    </form>
+</div>
+{% endblock %}

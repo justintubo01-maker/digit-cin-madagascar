@@ -1,0 +1,95 @@
+{% extends 'cin/base.html' %}
+
+{% block title %}Examen de Concordance - Dossier {{ demande.numero_cin }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto flex flex-col space-y-5">
+    
+    <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+        <a href="{% url 'dashboard_validation' %}" class="inline-flex items-center text-sm font-semibold text-slate-600 hover:text-slate-900 transition">
+            <i class="fa-solid fa-arrow-left mr-2"></i> Retour (Dossier en cours d'instruction {{ demande.numero_cin }})
+        </a>
+        <span class="text-xs bg-amber-100 text-amber-800 font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+            Statut : Examen de concordance
+        </span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <div class="space-y-4">
+            <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm space-y-4">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider border-b pb-2">
+                    <i class="fa-solid fa-images text-blue-500 mr-1"></i> Numérisations d'images (Côté-à-Côté)
+                </h3>
+                
+                <div class="border border-slate-100 rounded-xl p-3 bg-slate-50 flex items-center space-x-4">
+                    <div class="w-24 h-28 bg-white border rounded-lg overflow-hidden flex-shrink-0 shadow-sm">
+                        <img src="{{ demande.photo_identite.url }}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1">
+                        <span class="block text-xs font-bold text-slate-400 uppercase mb-1">Visuel Recto</span>
+                        <img src="{{ demande.scan_recto.url }}" class="w-full h-24 object-contain bg-white border rounded-lg shadow-sm">
+                    </div>
+                </div>
+
+                <div class="border border-slate-100 rounded-xl p-3 bg-slate-50">
+                    <span class="block text-xs font-bold text-slate-400 uppercase mb-2">Visuel Verso</span>
+                    <img src="{{ demande.scan_verso.url }}" class="w-full h-32 object-contain bg-white border rounded-lg shadow-sm">
+                </div>
+            </div>
+
+            <form method="POST" class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center space-x-4">
+                {% csrf_token %}
+                
+                <button type="submit" name="action_decision" value="valider" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition shadow-sm text-sm text-center flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Valider</span>
+                </button>
+
+                <button type="submit" name="action_decision" value="refuser" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl transition shadow-sm text-sm text-center flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>En attente de Modification</span>
+                </button>
+            </form>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm space-y-6">
+            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider border-b pb-2">
+                <i class="fa-solid fa-id-card-clip text-amber-500 mr-1"></i> Spécification Générale
+            </h3>
+
+            <div class="space-y-4 text-sm">
+                <div class="grid grid-cols-3 border-b border-slate-50 pb-2">
+                    <span class="text-slate-400 font-medium">N° de carte :</span>
+                    <span class="col-span-2 font-mono font-bold text-slate-800 text-base">{{ demande.numero_cin }}</span>
+                </div>
+                <div class="grid grid-cols-3 border-b border-slate-50 pb-2">
+                    <span class="text-slate-400 font-medium">Nom :</span>
+                    <span class="col-span-2 font-bold text-slate-900 uppercase">{{ demande.nom }}</span>
+                </div>
+                <div class="grid grid-cols-3 border-b border-slate-50 pb-2">
+                    <span class="text-slate-400 font-medium">Prénom(s) :</span>
+                    <span class="col-span-2 font-semibold text-slate-800">{{ demande.prenom }}</span>
+                </div>
+                <div class="grid grid-cols-3 border-b border-slate-50 pb-2">
+                    <span class="text-slate-400 font-medium">Sexe :</span>
+                    <span class="col-span-2 font-medium text-slate-700">{{ demande.get_sexe_display }}</span>
+                </div>
+                <div class="grid grid-cols-3 border-b border-slate-50 pb-2">
+                    <span class="text-slate-400 font-medium">Né(e) le :</span>
+                    <span class="col-span-2 font-medium text-slate-700">{{ demande.date_naissance }}</span>
+                </div>
+                <div class="grid grid-cols-3 border-b border-slate-50 pb-2">
+                    <span class="text-slate-400 font-medium">Adresse :</span>
+                    <span class="col-span-2 font-medium text-slate-700 text-xs bg-slate-50 p-2 rounded-lg border">{{ demande.adresse }}</span>
+                </div>
+                <div class="grid grid-cols-3 border-b border-slate-50 pb-2">
+                    <span class="text-slate-400 font-medium">Téléphone :</span>
+                    <span class="col-span-2 font-mono text-slate-700">{{ demande.telephone }}</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
