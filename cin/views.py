@@ -5,6 +5,14 @@ from django.contrib.auth.decorators import login_required
 from .models import DemandeCIN
 from django.http import HttpResponseForbidden
 
+
+from django.http import HttpResponse, HttpResponseForbidden
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from .models import DemandeCIN
 # ==========================================
 # PHOTO 1 : PORTAIL GENERAL
 # ==========================================
@@ -222,4 +230,47 @@ def supprimer_demande(request, pk):
     demande.delete() # Supprime définitivement la ligne de la BDD
     return redirect('dashboard_saisie')
 
+
+
+
+@login_required(login_url='/connexion/impression/')
+def exporter_cin_pdf(request, pk):
+    # SÉCURITÉ : Seul le groupe Impression ou le superuser peut imprimer
+    if not request.user.groups.filter(name='Impression').exists() and not request.user.is_superuser:
+        return HttpResponseForbidden("Accès interdit : Vous n'avez pas les droits pour imprimer ce document.")
+        
+    demande = get_object_or_404(DemandeCIN, pk=pk)
+    
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="CIN_{demande.nom}_{demande.prenom}.pdf"'
+    
+    doc = SimpleDocTemplate(response, pagesize=letter, rightMargin=40, leftMargin=40, topMargin=40, bottomMargin=40)
+    story = []
+    
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle('Title', parent=styles['Heading1'], alignment=1, spaceAfter=20)
+    normal_style = styles['Normal']
+    
+    # --- Contenu du PDF aux normes ---
+    story.append(Paragraph("<b>REPUBLIQUE DE MADAGASCAR</b>", title_style))
+    story.append(Paragraph("<i>Fitiavana - Tanindrazana - Fandrosoana</i>", ParagraphStyle('Sub', parent=styles['Normal'], alignment=1, spaceAfter=15)))
+    story.append(Paragraph("<h2>CARTE NATIONALE D'IDENTITE</h2>", title_style))
+    story.append(Spacer(1, 15))
+    
+    # Vérification Duplicata
+    type_doc = "DUPLICATA" if demande.est_duplicata else "PREMIÈRE ENREGISTREMENT"
+    story.append(Paragraph(f"<b>TYPE DE DOCUMENT :</b> {type_doc}", normal_style))
+    story.append(Spacer(1, 10))
+    
+    story.append(Paragraph(f"<b>NOM COMPLET :</b> {demande.nom.upper()} {demande.prenom}", normal_style))
+    story.append(Spacer(1, 5))
+    story.append(Paragraph(f"<b>FILS DE (Père) :</b> {demande.nom_complet_pere or '............................................'}", normal_style))
+    story.append(Spacer(1, 5))
+    story.append(Paragraph(f"<b>ET DE (Mère) :</b> {demande.nom_complet_mere or '............................................'}", normal_style))
+    story.append(Spacer(1, 20))
+    
+    story.append(Paragraph("<b>Signature de l'Autorité</b>", ParagraphStyle('Sign', parent=styles['Normal'], alignment=2)))
+    
+    doc.build(story)
+    return response
 # Create your views here.

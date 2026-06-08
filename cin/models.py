@@ -22,6 +22,9 @@ class DemandeCIN(models.Model):
     date_naissance = models.DateField(verbose_name="Date de naissance")
     lieu_naissance = models.CharField(max_length=100, verbose_name="Lieu de naissance")
     adresse = models.TextField(verbose_name="Adresse")
+    nom_complet_pere = models.CharField(max_length=255, verbose_name="Nom complet du père", blank=True,null=True)
+    nom_complet_mere = models.CharField(max_length=255, verbose_name="Nom complet de la mère", blank=True,null=True)
+    est_duplicata = models.BooleanField(default=False, verbose_name="C'est un duplicata")
     telephone = models.CharField(max_length=15, verbose_name="Numéro de téléphone")
 
     # --- Fichiers Numérisés / Images (Photo 4) ---
@@ -46,5 +49,6 @@ class DemandeCIN(models.Model):
         ordering = ['-date_creation']
 
     def __str__(self):
-        return f"CIN N° {self.numero_cin} - {self.nom} {self.prenom}"
+        type_demande = "Duplicata" if self.est_duplicata else "Première demande"
+        return f"CIN de {self.nom} {self.prenom} ({type_demande})"
 # Create your models here.
