@@ -35,5 +35,7 @@ urlpatterns = [
     # À ajouter dans cin/urls.py
     path('saisie/modifier/<int:pk>/', views.modifier_demande, name='modifier_demande'),
     path('saisie/supprimer/<int:pk>/', views.supprimer_demande, name='supprimer_demande'),
-    path('demande/<int:pk>/pdf/', views.exporter_cin_pdf, name='exporter_cin_pdf'),
+    # Modifie la ligne 38 de ton urls.py pour qu'elle devienne :
+    path('demande/<int:pk>/pdf/', views.generer_cin_pdf, name='generer_cin_pdf'),
+    path('impression/pdf/<int:pk>/', views.generer_cin_pdf, name='generer_cin_pdf'),
 ]

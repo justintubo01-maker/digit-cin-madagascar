@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+        }
+        /* Conteneur pour mettre le Recto et Verso l'un en dessous de l'autre ou côte à côte */
+        .carte-container {
+            width: 86mm; /* Taille standard d'une carte d'identité */
+            height: 54mm;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 20mm;
+            position: relative;
+            background-color: #ffffff;
+        }
+        /* Tu peux réutiliser ici le design exact de tes deux cartes */
+    </style>
+</head>
+<body>
+
+    <div class="carte-container">
+        <h3>REPUBLIQUE DE MADAGASCAR</h3>
+        <p><strong>Nom :</strong> {{ demande.nom }}</p>
+        <p><strong>Prénom :</strong> {{ demande.prenom }}</p>
+        <p><strong>N° CIN :</strong> {{ demande.numero_cin }}</p>
+    </div>
+
+    <div class="carte-container">
+        <p><strong>Père :</strong> {{ demande.nom_pere }}</p>
+        <p><strong>Mère :</strong> {{ demande.nom_mere }}</p>
+        <p><strong>Adresse :</strong> {{ demande.adresse }}</p>
+    </div>
+
+</body>
+</html>

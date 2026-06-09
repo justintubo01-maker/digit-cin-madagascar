@@ -13,6 +13,11 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from .models import DemandeCIN
+
+
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from xhtml2pdf import pisa  # Le nouvel outil magique pour Windows
 # ==========================================
 # PHOTO 1 : PORTAIL GENERAL
 # ==========================================
@@ -27,19 +32,45 @@ def connexion_saisie(render_request):
     return render(render_request, 'cin/saisie_connexion.html')
 
 
+from django.db.models import Q
+
 @login_required(login_url='/connexion/saisie/')
-def dashboard_saisie(request):
-    if not request.user.groups.filter(name='Saisie').exists() and not request.user.is_superuser:
-        return HttpResponseForbidden("Accès interdit : Cet espace est réservé uniquement aux agents de SAISIE.")
+def dashboard_saisie(request): # Adapte le nom exact de ta fonction si nécessaire
+    # 1. On récupère toutes les demandes de départ
+    demandes = DemandeCIN.objects.all().order_by('-id')
     
-    toutes_les_demandes = DemandeCIN.objects.all()
+    # 2. Récupération des paramètres envoyés par le HTML
+    recherche = request.GET.get('search', '')
+    filtre_statut = request.GET.get('statut', '')
+    
+    # 3. Application de la recherche textuelle (recherche croisée)
+    if recherche:
+        demandes = demandes.filter(
+            Q(numero_cin__icontains=recherche) |
+            Q(nom__icontains=recherche) |
+            Q(prenom__icontains=recherche)
+        )
+        
+    # 4. Application du filtre par statut
+    if filtre_statut and filtre_statut != 'Tous':
+        demandes = demandes.filter(statut=filtre_statut)
+        
+    # 5. Calcul des compteurs pour tes petites boîtes du haut
+    total_demandes = DemandeCIN.objects.count()
+    en_attente = DemandeCIN.objects.filter(statut='EN_ATTENTE').count()
+    approuvees = DemandeCIN.objects.filter(statut='APPROUVE').count()
+    rejetees = DemandeCIN.objects.filter(statut='REJETE').count()
+    
     context = {
-        'demandes': toutes_les_demandes,
-        'total': toutes_les_demandes.count(),
-        'en_attente': DemandeCIN.objects.filter(statut='EN_ATTENTE').count(),
-        'approuvees': DemandeCIN.objects.filter(statut='APPROUVE').count(),
-        'rejetees': DemandeCIN.objects.filter(statut='REJETE').count(),
+        'demandes': demandes,
+        'recherche': recherche,
+        'filtre_statut': filtre_statut,
+        'total_demandes': total_demandes,
+        'en_attente': en_attente,
+        'approuvees': approuvees,
+        'rejetees': rejetees,
     }
+    
     return render(request, 'cin/saisie_dashboard.html', context)
 
 # cin/views.py
@@ -113,8 +144,12 @@ def instruction_demande(render_request, pk):
         
         if decision == 'valider':
             demande.statut = 'APPROUVE'
+            demande.save() # On enregistre le changement
+            return redirect('dashboard_validation')
         elif decision == 'refuser':
             demande.statut = 'REJETE'
+            demande.save() # On enregistre le changement
+            return redirect('dashboard_validation')
             
         demande.save()
         # Récupération et enregistrement automatique des nouveaux champs
@@ -256,44 +291,22 @@ def supprimer_demande(request, pk):
 
 
 
-@login_required(login_url='/connexion/impression/')
-def exporter_cin_pdf(request, pk):
-    # SÉCURITÉ : Seul le groupe Impression ou le superuser peut imprimer
-    if not request.user.groups.filter(name='Impression').exists() and not request.user.is_superuser:
-        return HttpResponseForbidden("Accès interdit : Vous n'avez pas les droits pour imprimer ce document.")
-        
+
+@login_required
+def generer_cin_pdf(request, pk):
     demande = get_object_or_404(DemandeCIN, pk=pk)
     
+    # Charge le code HTML épuré contenant uniquement les éléments de la carte d'identité
+    html_string = render_to_string('cin/carte_pdf_template.html', {'demande': demande})
+    
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="CIN_{demande.nom}_{demande.prenom}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="CIN_{demande.numero_cin}.pdf"'
     
-    doc = SimpleDocTemplate(response, pagesize=letter, rightMargin=40, leftMargin=40, topMargin=40, bottomMargin=40)
-    story = []
+    # Transformation directe en PDF
+    pisa_status = pisa.CreatePDF(html_string, dest=response)
     
-    styles = getSampleStyleSheet()
-    title_style = ParagraphStyle('Title', parent=styles['Heading1'], alignment=1, spaceAfter=20)
-    normal_style = styles['Normal']
-    
-    # --- Contenu du PDF aux normes ---
-    story.append(Paragraph("<b>REPUBLIQUE DE MADAGASCAR</b>", title_style))
-    story.append(Paragraph("<i>Fitiavana - Tanindrazana - Fandrosoana</i>", ParagraphStyle('Sub', parent=styles['Normal'], alignment=1, spaceAfter=15)))
-    story.append(Paragraph("<h2>CARTE NATIONALE D'IDENTITE</h2>", title_style))
-    story.append(Spacer(1, 15))
-    
-    # Vérification Duplicata
-    type_doc = "DUPLICATA" if demande.est_duplicata else "PREMIÈRE ENREGISTREMENT"
-    story.append(Paragraph(f"<b>TYPE DE DOCUMENT :</b> {type_doc}", normal_style))
-    story.append(Spacer(1, 10))
-    
-    story.append(Paragraph(f"<b>NOM COMPLET :</b> {demande.nom.upper()} {demande.prenom}", normal_style))
-    story.append(Spacer(1, 5))
-    story.append(Paragraph(f"<b>FILS DE (Père) :</b> {demande.nom_complet_pere or '............................................'}", normal_style))
-    story.append(Spacer(1, 5))
-    story.append(Paragraph(f"<b>ET DE (Mère) :</b> {demande.nom_complet_mere or '............................................'}", normal_style))
-    story.append(Spacer(1, 20))
-    
-    story.append(Paragraph("<b>Signature de l'Autorité</b>", ParagraphStyle('Sign', parent=styles['Normal'], alignment=2)))
-    
-    doc.build(story)
+    if pisa_status.err:
+        return HttpResponse("Erreur lors de la génération du PDF", status=500)
+        
     return response
 # Create your views here.
