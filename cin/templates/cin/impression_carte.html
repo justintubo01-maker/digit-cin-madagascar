@@ -12,50 +12,81 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         
-        <div class="bg-gradient-to-br from-slate-50 to-blue-50/30 p-5 rounded-2xl border-2 border-slate-300 shadow-md relative overflow-hidden aspect-[1.58/1]">
-            <div class="text-center border-b border-blue-200 pb-1 mb-3">
-                <span class="block text-[10px] font-bold text-xs uppercase tracking-wider text-slate-700">République de Madagascar</span>
-                <span class="block text-[8px] italic text-slate-400">Malagasy ntsika</span>
+        <div class="p-4 border border-slate-200 rounded-xl shadow-sm bg-white" style="width: 460px; height: 280px; font-family: Arial, sans-serif; font-size: 11px; color: #333; box-sizing: border-box;">
+            <div class="text-center mb-3" style="line-height: 1.3;">
+                <b style="font-size: 13px; letter-spacing: 1px; color: #1e293b;">REPUBLIQUE DE MADAGASCAR</b><br>
+                <small style="font-size: 9px; font-style: italic; color: #64748b;">Fitiavana - Tanindrazana - Fandrosoana</small><br>
+                <span style="font-size: 11px; font-weight: bold; text-decoration: underline; display: inline-block; margin-top: 4px; color: #0f172a;">Carte d'Identité Nationale</span>
             </div>
 
-            <div class="flex space-x-4">
-                <div class="w-24 h-28 bg-white border border-slate-300 rounded shadow-sm overflow-hidden flex-shrink-0">
-                    <img src="{{ demande.photo_identite.url }}" class="w-full h-full object-cover">
-                </div>
-                <div class="flex-1 text-[11px] space-y-1 text-slate-800">
-                    <div><span class="text-slate-400 font-medium">N° CIN:</span> <strong class="font-mono text-xs text-blue-700">{{ demande.numero_cin }}</strong></div>
-                    <div><span class="text-slate-400 font-medium">Nom:</span> <strong class="uppercase text-slate-900">{{ demande.nom }}</strong></div>
-                    <div><span class="text-slate-400 font-medium">Prénom:</span> <strong class="text-slate-900">{{ demande.prenom }}</strong></div>
-                    <div><span class="text-slate-400 font-medium">Sexe:</span> <strong>{{ demande.get_sexe_display }}</strong></div>
-                    <div><span class="text-slate-400 font-medium">Né(e) le:</span> <strong>{{ demande.date_naissance }}</strong></div>
-                    <div><span class="text-slate-400 font-medium">À:</span> <strong>{{ demande.lieu_naissance }}</strong></div>
-                </div>
-            </div>
-            <div class="absolute bottom-2 right-4 text-[9px] font-bold font-mono text-slate-300">DIGIT-CIN RECTO</div>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="width: 30%; vertical-align: top; padding-right: 15px;">
+                        {% if demande.photo_identite %}
+                            <img src="{{ demande.photo_identite.url }}" class="rounded border border-slate-300 shadow-sm" style="width: 105px; height: 125px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-slate-100 border border-slate-300 rounded d-flex align-items-center justify-content-center text-slate-400" style="width: 105px; height: 125px;">Pas de photo</div>
+                        {% endif %}
+                    </td>
+                    
+                    <td style="width: 70%; vertical-align: middle;">
+                        <table style="width: 100%; line-height: 1.7; border-collapse: collapse;">
+                            <tr>
+                                <td style="width: 32%; font-weight: bold; color: #475569;">Nom :</td>
+                                <td style="font-weight: 700; color: #0f172a;">{{ demande.nom.upper }}</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; color: #475569;">Prénom(s) :</td>
+                                <td style="font-weight: 600; color: #0f172a;">{{ demande.prenom }}</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; color: #475569; vertical-align: top;">Né(e) le :</td>
+                                <td style="color: #0f172a;">{{ demande.date_naissance|date:"d F Y" }}<br>à {{ demande.lieu_naissance }}</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; color: #475569;">Sexe :</td>
+                                <td style="color: #0f172a;">{{ demande.sexe }}</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; color: #475569; padding-top: 5px;">N° CIN :</td>
+                                <td class="font-monospace fw-bold text-primary" style="font-size: 12px; padding-top: 5px;">
+                                    {{ demande.numero_cin }}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
         </div>
 
-        <div class="bg-gradient-to-br from-slate-50 to-slate-100 p-5 rounded-2xl border-2 border-slate-300 shadow-md relative overflow-hidden aspect-[1.58/1] flex flex-col justify-between">
-            <div class="text-[11px] space-y-2 text-slate-800">
-                <div class="bg-white p-2 rounded border border-slate-200">
-                    <span class="block text-[9px] text-slate-400 font-medium mb-0.5">Adresse de résidence :</span>
-                    <p class="font-medium text-slate-700 text-[10px] leading-tight">{{ demande.adresse }}</p>
-                </div>
-                <div>
-                    <span class="text-slate-400 font-medium">Contact d'enregistrement :</span> 
-                    <strong class="font-mono">{{ demande.telephone }}</strong>
-                </div>
-            </div>
-
-            <div class="flex justify-between items-end border-t border-slate-200 pt-2">
-                <div class="text-[8px] text-slate-400 font-mono">Date d'édition : {% now "d/m/Y" %}</div>
-                <div class="text-center w-32 border border-dashed border-slate-300 rounded p-1 bg-white">
-                    <span class="block text-[7px] uppercase text-slate-400 tracking-tight">Visa Autorité</span>
-                    <div class="h-6 flex items-center justify-center text-xs font-serif text-slate-300 italic">Signé</div>
-                </div>
-            </div>
+        <div class="p-4 border border-slate-200 rounded-xl shadow-sm bg-white" style="width: 460px; height: 280px; font-family: Arial, sans-serif; font-size: 11px; color: #333; box-sizing: border-box;">
+        <div class="w-100 mt-2" style="line-height: 2.2;">
+            <table class="w-100" style="border-collapse: collapse;">
+                <tr>
+                    <td style="width: 30%; font-weight: bold; color: #475569; padding: 6px 0;">Domicile :</td>
+                    <td style="color: #0f172a; padding: 6px 0;">{{ demande.adresse|default:"...................." }}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; color: #475569; padding: 6px 0;">Père :</td>
+                    <td style="color: #0f172a; padding: 6px 0;">{{ demande.nom_pere|default:"...................." }}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; color: #475569; padding: 6px 0;">Mère :</td>
+                    <td style="color: #0f172a; padding: 4px 0;">{{ demande.nom_mere|default:"...................." }}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; color: #475569; padding: 6px 0;">Fait à :</td>
+                    <td style="color: #0f172a; padding: 6px 0;">{{ demande.lieu_naissance|default:"Antananarivo" }}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; color: #475569; padding: 6px 0;">Le :</td>
+                    <td style="color: #0f172a; padding: 6px 0;">{{ demande.date_naissance|date:"d F Y" }}</td>
+                </tr>
+            </table>
         </div>
-
     </div>
+    </div>
+
 
     <form method="POST" class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex justify-end">
         {% csrf_token %}

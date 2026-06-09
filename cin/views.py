@@ -56,6 +56,11 @@ def nouvelle_demande(render_request):
         date_naissance = render_request.POST.get('date_naissance')
         lieu_naissance = render_request.POST.get('lieu_naissance')
         adresse = render_request.POST.get('adresse')
+        # Récupération des nouveaux champs du formulaire
+        nom_complet_pere =  render_request.POST.get('nom_complet_pere')
+        nom_complet_mere =  render_request.POST.get('nom_complet_mere')
+        # Pour la case à cocher, si elle est cochée elle renvoie 'on', sinon None
+        est_duplicata =  render_request.POST.get('est_duplicata') == 'on'
         telephone = render_request.POST.get('telephone')
         
         # 2. Récupération des fichiers (Uniquement Photo, Recto et Verso)
@@ -63,14 +68,16 @@ def nouvelle_demande(render_request):
         scan_recto = render_request.FILES.get('scan_recto')
         scan_verso = render_request.FILES.get('scan_verso')
         
-        # 3. Création de l'enregistrement en BDD
+         # 3. Création de l'enregistrement en BDD
         DemandeCIN.objects.create(
             numero_cin=numero_cin, sexe=sexe, nom=nom, prenom=prenom,
             date_naissance=date_naissance, lieu_naissance=lieu_naissance,
             adresse=adresse, telephone=telephone,
-            photo_identite=photo_identite, 
-            scan_recto=scan_recto, scan_verso=scan_verso,
-            statut='EN_ATTENTE'
+            nom_pere=nom_complet_pere,  # On enregistre le père
+            nom_mere=nom_complet_mere,  # On enregistre la mère
+            photo_identite=photo_identite,
+            scan_recto=scan_recto,
+            scan_verso=scan_verso
         )
         
         # 4. Redirection selon le bouton cliqué
@@ -110,6 +117,17 @@ def instruction_demande(render_request, pk):
             demande.statut = 'REJETE'
             
         demande.save()
+        # Récupération et enregistrement automatique des nouveaux champs
+    try:
+        # On récupère la demande qui vient d'être manipulée ou créée
+        demande = DemandeCIN.objects.latest('id')
+        demande.nom_complet_pere = render_request.POST.get('nom_complet_pere')
+        demande.nom_complet_mere = render_request.POST.get('nom_complet_mere')
+        demande.est_duplicata = render_request.POST.get('est_duplicata') == 'on'
+        demande.save()
+    except Exception:
+        pass
+
         return redirect('dashboard_validation')
         
     return render(render_request, 'cin/validation_instruction.html', {'demande': demande})
@@ -204,25 +222,30 @@ def deconnexion_view(render_request):
     # À ajouter à la fin de cin/views.py
 
 @login_required(login_url='/connexion/saisie/')
-def modifier_demande(request, pk):
+def modifier_demande(render_request, pk):
     demande = get_object_or_404(DemandeCIN, pk=pk)
     
-    if request.method == 'POST':
-        demande.numero_cin = request.POST.get('numero_cin')
-        demande.nom = request.POST.get('nom')
-        demande.prenom = request.POST.get('prenom')
-        demande.telephone = request.POST.get('telephone')
+    if render_request.method == 'POST':
+        demande.numero_cin = render_request.POST.get('numero_cin')
+        demande.nom = render_request.POST.get('nom')
+        demande.prenom = render_request.POST.get('prenom')
+        demande.telephone = render_request.POST.get('telephone')
+        demande.adresse = render_request.POST.get('adresse')
+        
+        # Récupération du père et de la mère avec la bonne variable
+        demande.nom_pere = render_request.POST.get('nom_pere')
+        demande.nom_mere = render_request.POST.get('nom_mere')
         
         # Si de nouveaux fichiers sont soumis, on les met à jour
-        if request.FILES.get('photo_identite'):
-            demande.photo_identite = request.FILES.get('photo_identite')
+        if render_request.FILES.get('photo_identite'):
+            demande.photo_identite = render_request.FILES.get('photo_identite')
             
         # On repasse automatiquement le dossier en attente si l'agent l'a corrigé
         demande.statut = 'EN_ATTENTE'
         demande.save()
         return redirect('dashboard_saisie')
         
-    return render(request, 'cin/modifier_formulaire.html', {'demande': demande})
+    return render(render_request, 'cin/modifier_formulaire.html', {'demande': demande})
 
 @login_required(login_url='/connexion/saisie/')
 def supprimer_demande(request, pk):

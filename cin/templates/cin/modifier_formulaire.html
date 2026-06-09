@@ -25,6 +25,21 @@
                 <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Prénom</label>
                 <input type="text" name="prenom" value="{{ demande.prenom }}" class="w-full p-2 rounded-xl border text-sm focus:ring-2 focus:ring-emerald-500">
             </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nom complet du père</label>
+                    <input type="text" name="nom_pere" value="{{ demande.nom_pere|default:'' }}" class="w-full p-2 border border-slate-300 rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nom complet de la mère</label>
+                    <input type="text" name="nom_mere" value="{{ demande.nom_mere|default:'' }}" class="w-full p-2 border border-slate-300 rounded-lg">
+                </div>
+                </div>
+
+                <div class="mb-4">
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Adresse (Domicile)</label>
+                <input type="text" name="adresse" value="{{ demande.adresse|default:'' }}" class="w-full p-2 border border-slate-300 rounded-lg">
+                </div>
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Téléphone</label>
                 <input type="text" name="telephone" value="{{ demande.telephone }}" class="w-full p-2 rounded-xl border text-sm focus:ring-2 focus:ring-emerald-500">

@@ -91,8 +91,7 @@
                         <td class="py-3.5 px-4 font-mono font-medium text-slate-700">{{ demande.numero_cin }}</td>
                         <td class="py-3.5 px-4">
                             <div class="font-semibold text-slate-900">{{ demande.nom }} {{ demande.prenom }}</div>
-                            <div class="text-xs text-slate-400">{{ demande.get_sexe_display }} • Née le {{
-                                demande.date_naissance }}</div>
+                            <div class="text-xs text-slate-400">{{ demande.get_sexe_display }} • Née le {{demande.date_naissance }}</div>
                         </td>
                         <td class="py-3.5 px-4 text-slate-500">{{ demande.date_creation|date:"d/m/Y H:i" }}</td>
                         <td class="py-3.5 px-4">

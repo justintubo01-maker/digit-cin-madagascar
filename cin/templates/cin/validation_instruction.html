@@ -87,6 +87,16 @@
                     <span class="text-slate-400 font-medium">Téléphone :</span>
                     <span class="col-span-2 font-mono text-slate-700">{{ demande.telephone }}</span>
                 </div>
+                <div class="border-t border-slate-100 my-3 pt-3">
+                <div class="mb-3">
+                    <span class="text-slate-500">Nom du père :</span>
+                    <span class="font-semibold text-slate-800 ml-2">{{ demande.nom_pere|default:"Non renseigné" }}</span>
+                </div>
+                <div class="mb-3">
+                    <span class="text-slate-500">Nom de la mère :</span>
+                    <span class="font-semibold text-slate-800 ml-2">{{ demande.nom_mere|default:"Non renseigné" }}</span>
+                </div>
+            </div>
             </div>
         </div>
 
